@@ -211,10 +211,10 @@ h3.sec{font-size:.92rem;margin:16px 0 8px;color:var(--muted)}
   <div class="pick-wrap">
     <div class="brand"><span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5l8 7-8 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Teleprompter <small>SMK</small></div>
     <h1>O que este aparelho vai fazer?</h1>
-    <p class="sub">Abra este mesmo endereço no tablet e no computador ou celular. O tablet mostra o texto e o controle comanda tudo em tempo real.</p>
+    <p class="sub">Abra este mesmo link no tablet e no celular. O tablet mostra o texto e o celular comanda tudo em tempo real.</p>
     <div class="pick-grid">
       <button class="pick" type="button" data-role="tablet"><strong>Tablet</strong><span>Fica parado na frente da câmera e mostra o roteiro rolando.</span></button>
-      <button class="pick" type="button" data-role="controle"><strong>Controle</strong><span>Escreve o roteiro e comanda o tablet, pelo computador ou pelo celular.</span></button>
+      <button class="pick" type="button" data-role="controle"><strong>Celular</strong><span>Escreve o roteiro e comanda o tablet. Também funciona no computador.</span></button>
     </div>
   </div>
 </section>
@@ -904,7 +904,7 @@ C.renderRemote=function(){
   }else if(NET.state==="off"){
     rHint.hidden=false;rHint.textContent="Sem conexão com o Firebase. Você ainda pode escrever roteiros neste aparelho.";
   }else if(!p){
-    rHint.hidden=false;rHint.textContent="Abra este mesmo endereço no tablet e escolha Tablet. Para abrir direto nesse modo, termine o endereço com #tablet.";
+    rHint.hidden=false;rHint.textContent="Abra este mesmo link no tablet e escolha Tablet.";
   }else rHint.hidden=true;
 
   var send=$("#cSend"),onTablet=!!(p&&p.sid&&p.sid===C.sel);
@@ -1006,7 +1006,7 @@ function leave(){
 }
 $$(".pick").forEach(function(b){b.addEventListener("click",function(){enter(b.dataset.role)})});
 var h="";try{h=(location.hash||"").slice(1)}catch(e){}
-var first=(h==="tablet"||h==="controle")?h:ls.get("tp:role",null);
+var first=(h==="tablet"||h==="controle")?h:null;
 if(first==="tablet"||first==="controle")enter(first);else picker.hidden=false;
 })();
 </script>

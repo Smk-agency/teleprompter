@@ -4,8 +4,10 @@ Teleprompter com controle remoto. O tablet fica na frente da câmera mostrando o
 
 ## Como usar
 
-1. No tablet, abra o site e escolha **Tablet** (ou abra direto com `#tablet` no fim do endereço).
-2. No computador ou celular, abra o mesmo site e escolha **Controle** (ou `#controle`).
+Link único: https://smk-agency.github.io/teleprompter/
+
+1. No tablet, abra o link e escolha **Tablet**.
+2. No celular (ou computador), abra o mesmo link e escolha **Celular**.
 3. Quando aparecer "Tablet conectado" no controle, é só gravar.
 
 ## Firebase
