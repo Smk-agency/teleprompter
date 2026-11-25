@@ -10,6 +10,16 @@ Link único: https://smk-agency.github.io/teleprompter/
 2. No celular (ou computador), abra o mesmo link e escolha **Celular**.
 3. Quando aparecer "Tablet conectado" no controle, é só gravar.
 
+## Importar vários roteiros
+
+Em **Roteiros › Importar**, cole o texto inteiro ou escolha um arquivo `.txt`/`.md`. O app separa por:
+
+- uma linha só com `---` (ou `***`, `===`) entre os roteiros;
+- títulos no começo de cada um: `Roteiro 1`, `Vídeo 2: Nome`, `Reels 3`, `# Nome`;
+- ou duas linhas em branco seguidas.
+
+Antes de salvar aparece a lista: dá pra renomear e desmarcar. Arquivos do Word ou PDF: abra, copie tudo e cole.
+
 ## Firebase
 
 Usa o mesmo projeto do SMK OS (`smk-agency`), com login anônimo, nesta área do Firestore:

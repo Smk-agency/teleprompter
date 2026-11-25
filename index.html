@@ -165,6 +165,30 @@ h3.sec{font-size:.92rem;margin:16px 0 8px;color:var(--muted)}
 .ol.cur{background:var(--brand-dim);border-color:var(--brand)}
 .ol.cur .n{color:var(--ink)}
 
+/* ---------- Importar ---------- */
+.ph-b{display:flex;gap:8px;flex-wrap:wrap}
+.empty .ph-b{margin-top:2px}
+dialog.modal{width:min(760px,calc(100vw - 24px));max-height:calc(100dvh - 24px);padding:0;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+dialog.modal::backdrop{background:rgba(0,0,0,.65)}
+.mwrap{display:flex;flex-direction:column;max-height:calc(100dvh - 26px)}
+.mhead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.mhead h2{font-size:1.1rem}
+.mbody{padding:16px;overflow:auto;display:flex;flex-direction:column;gap:12px;min-height:0}
+.mfoot{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 16px;border-top:1px solid var(--line)}
+.mfoot .ph-b{margin-left:auto}
+textarea.imp{width:100%;min-height:38vh;resize:vertical;background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);padding:12px;font-family:var(--font-read);font-size:1rem;line-height:1.5}
+textarea.imp:focus{outline:none;border-color:var(--brand)}
+.how{margin:0;padding-left:1.2em;color:var(--muted);font-size:.9rem}
+.how code{color:var(--ink);background:var(--surface3);padding:1px 6px;border-radius:5px}
+.ilist{display:flex;flex-direction:column;gap:8px}
+.irow{display:flex;gap:10px;align-items:flex-start;background:var(--surface2);border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px}
+.irow input[type="checkbox"]{width:20px;height:20px;margin:6px 0 0;accent-color:var(--brand);flex:none}
+.irow .ib{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.irow .it{width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);padding:4px 0;font-weight:600}
+.irow .it:focus{outline:none;border-color:var(--brand)}
+.irow small{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.irow.off{opacity:.45}
+
 /* ---------- Tablet ---------- */
 #tab{position:fixed;inset:0;z-index:50;background:#000;color:#fff;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:none;font-family:var(--font-read)}
 #stage{position:absolute;inset:0;overflow:hidden}
@@ -231,7 +255,7 @@ h3.sec{font-size:.92rem;margin:16px 0 8px;color:var(--muted)}
 
   <div class="shell" id="shell" data-tab="remote">
     <aside class="panel card" id="pList" aria-label="Roteiros">
-      <div class="ph"><h2>Roteiros</h2><button class="btn primary sm" id="cNew" type="button">Novo roteiro</button></div>
+      <div class="ph"><h2>Roteiros</h2><div class="ph-b"><button class="btn sm" id="cImp" type="button">Importar</button><button class="btn primary sm" id="cNew" type="button">Novo roteiro</button></div></div>
       <div class="list" id="cList"></div>
       <p class="note" id="cListNote"></p>
     </aside>
@@ -247,8 +271,8 @@ h3.sec{font-size:.92rem;margin:16px 0 8px;color:var(--muted)}
       </div>
       <div class="empty" id="cEmpty" hidden>
         <h2>Nenhum roteiro ainda</h2>
-        <p>Crie o primeiro roteiro. Ele fica salvo e aparece no tablet.</p>
-        <button class="btn primary" id="cNew2" type="button">Novo roteiro</button>
+        <p>Crie o primeiro roteiro ou importe vários de uma vez. Eles ficam salvos e aparecem no tablet.</p>
+        <div class="ph-b"><button class="btn primary" id="cNew2" type="button">Novo roteiro</button><button class="btn" id="cImp2" type="button">Importar vários</button></div>
       </div>
     </main>
 
@@ -299,6 +323,36 @@ h3.sec{font-size:.92rem;margin:16px 0 8px;color:var(--muted)}
       <p class="keys">Atalhos: espaço inicia e pausa, ↑ e ↓ mudam a velocidade, ← e → trocam de trecho.</p>
     </section>
   </div>
+
+  <dialog class="modal" id="imp" aria-labelledby="impH">
+    <div class="mwrap">
+      <div class="mhead"><h2 id="impH">Importar roteiros</h2><button class="btn ghost sm" id="impX" type="button">Fechar</button></div>
+      <div class="mbody" id="impIn">
+        <p class="note">Cole o texto com todos os roteiros ou escolha um arquivo .txt. O app separa um por um e mostra antes de salvar.</p>
+        <textarea class="imp" id="impText" placeholder="Cole aqui o arquivo inteiro" aria-label="Texto com vários roteiros"></textarea>
+        <ul class="how">
+          <li>Uma linha só com <code>---</code> entre um roteiro e outro, ou</li>
+          <li>cada roteiro começando com um título, como <code>Roteiro 1</code>, <code>Vídeo 2: Nome</code> ou <code># Nome</code>, ou</li>
+          <li>duas linhas em branco entre um roteiro e outro.</li>
+        </ul>
+      </div>
+      <div class="mbody" id="impOut" hidden>
+        <p class="note" id="impSum"></p>
+        <div class="ilist" id="impList"></div>
+      </div>
+      <div class="mfoot">
+        <div class="ph-b" id="impFootIn">
+          <label class="btn" for="impFile" style="display:inline-flex;align-items:center">Escolher arquivo</label>
+          <input type="file" id="impFile" accept=".txt,.md,.text,text/plain,text/markdown" hidden>
+          <button class="btn primary" id="impGo" type="button">Separar roteiros</button>
+        </div>
+        <div class="ph-b" id="impFootOut" hidden>
+          <button class="btn ghost" id="impBack" type="button">Voltar</button>
+          <button class="btn primary" id="impSave" type="button">Importar</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
 
   <nav class="tabs" id="cTabs" aria-label="Seções">
     <button type="button" data-tab="remote" aria-selected="true">Controle</button>
@@ -382,6 +436,42 @@ function splitParas(t){
   return p;
 }
 function words(t){var m=String(t).trim().match(/\S+/g);return m?m.length:0}
+/* Separa um texto com vários roteiros. Ordem de preferência:
+   1) linhas só com --- *** === ___ ~~~ e/ou títulos (# Nome, "Roteiro 3", "Vídeo 2: Nome"…)
+   2) duas ou mais linhas em branco seguidas
+   3) se nada disso existir, é um roteiro só. */
+var IMP_SEP=/^\s*([-*=_~#])\1{2,}\s*$/;
+var IMP_HEAD=/^\s*#{1,3}\s+\S/;
+var IMP_LABEL=/^\s*[*_]*\s*(roteiro|v[íi]deo|reels?|script|epis[óo]dio)\s*(n[º°o.]*\s*)?\d+\b/i;
+function impTidy(t){
+  return String(t).split("\n").map(function(l){return l.replace(/\s+$/,"")}).join("\n")
+    .replace(/\*\*|__/g,"").replace(/\n{3,}/g,"\n\n").trim();
+}
+function impTitle(l){
+  return l.replace(/^\s*#{1,3}\s+/,"").replace(/\*\*|__/g,"").replace(/^[*_\s]+|[*_\s:–—-]+$/g,"").trim().slice(0,80);
+}
+function splitScripts(raw){
+  var t=String(raw||"").replace(/\r\n?/g,"\n").replace(/ /g," ").replace(/^﻿/,"");
+  var lines=t.split("\n");
+  function isHead(l){return !IMP_SEP.test(l)&&l.trim().length<=90&&(IMP_HEAD.test(l)||IMP_LABEL.test(l))}
+  var seps=lines.filter(function(l){return IMP_SEP.test(l)}).length;
+  var heads=lines.filter(isHead).length;
+  var out=[];
+  if(seps>0||heads>=2){
+    var cur=null;
+    var push=function(){if(cur){var b=impTidy(cur.lines.join("\n"));if(b)out.push({title:cur.title,text:b})}cur=null};
+    lines.forEach(function(l){
+      if(IMP_SEP.test(l)){push();return}
+      if(isHead(l)){push();cur={title:impTitle(l),lines:[]};return}
+      if(!cur){if(!l.trim())return;cur={title:"",lines:[]}}
+      cur.lines.push(l);
+    });
+    push();
+  }else{
+    out=t.split(/\n[ \t]*\n(?:[ \t]*\n)+/).map(function(b){return {title:"",text:impTidy(b)}}).filter(function(x){return x.text});
+  }
+  return out;
+}
 function titleOf(s){
   if(s.title&&s.title.trim())return s.title.trim();
   var f=String(s.text||"").trim().split("\n")[0];
@@ -458,6 +548,14 @@ function createScript(){
   if(store.mode==="db")queueWrite(s);else localSave();
   fire("store");
   return s;
+}
+function addScripts(list){
+  var now=Date.now();
+  var made=list.map(function(x,i){return {id:uid()+i.toString(36),title:x.title||"",text:x.text||"",updated:now-i}});
+  store.scripts=made.concat(store.scripts);
+  if(store.mode==="db")made.forEach(queueWrite);else localSave();
+  fire("store");
+  return made;
 }
 function removeScript(id){
   store.scripts=store.scripts.filter(function(x){return x.id!==id});
@@ -940,6 +1038,72 @@ function newScript(){C.flush();var s=createScript();C.sel=s.id;ls.set("tp:sel",s
 $("#cNew").addEventListener("click",newScript);
 $("#cNew2").addEventListener("click",newScript);
 $("#cSend").addEventListener("click",function(){C.flush();if(C.sel)cmd("load",{id:C.sel})});
+
+/* ---------- Importar vários roteiros ---------- */
+var imp=$("#imp"),impText=$("#impText"),impList=$("#impList");
+var I={items:[]};
+I.step=function(out){
+  $("#impIn").hidden=out;$("#impOut").hidden=!out;
+  $("#impFootIn").hidden=out;$("#impFootOut").hidden=!out;
+};
+I.open=function(){
+  I.step(false);
+  if(imp.showModal)imp.showModal();else imp.setAttribute("open","");
+  setTimeout(function(){impText.focus()},50);
+};
+I.close=function(){if(imp.close)imp.close();else imp.removeAttribute("open")};
+I.count=function(){
+  var n=I.items.filter(function(x){return x.on}).length;
+  var b=$("#impSave");b.disabled=!n;
+  b.textContent=n===1?"Importar 1 roteiro":"Importar "+n+" roteiros";
+};
+I.preview=function(){
+  I.items=splitScripts(impText.value).map(function(x){x.on=true;return x});
+  if(!I.items.length){impText.focus();impText.placeholder="Cole o texto aqui antes de separar";return}
+  var n=I.items.length;
+  $("#impSum").textContent=n===1
+    ?"Encontrei 1 roteiro só. Se eram vários, volte e coloque uma linha com --- entre eles."
+    :"Encontrei "+n+" roteiros. Confira os nomes, desmarque o que não quiser e importe.";
+  impList.textContent="";
+  I.items.forEach(function(it,i){
+    var row=document.createElement("div");row.className="irow";
+    var cb=document.createElement("input");cb.type="checkbox";cb.checked=true;cb.setAttribute("aria-label","Importar roteiro "+(i+1));
+    var box=document.createElement("div");box.className="ib";
+    var ti=document.createElement("input");ti.type="text";ti.className="it";ti.value=it.title;
+    ti.placeholder=titleOf({title:"",text:it.text});ti.setAttribute("aria-label","Nome do roteiro "+(i+1));
+    var sm=document.createElement("small");var w=words(it.text);
+    sm.textContent=(i+1)+" · "+w+(w===1?" palavra":" palavras")+" · "+it.text.replace(/\s+/g," ").slice(0,90);
+    cb.addEventListener("change",function(){it.on=cb.checked;row.classList.toggle("off",!cb.checked);I.count()});
+    ti.addEventListener("input",function(){it.title=ti.value});
+    box.appendChild(ti);box.appendChild(sm);row.appendChild(cb);row.appendChild(box);impList.appendChild(row);
+  });
+  I.count();I.step(true);
+};
+I.save=function(){
+  var pick=I.items.filter(function(x){return x.on}).map(function(x){return {title:x.title.trim(),text:x.text}});
+  if(!pick.length)return;
+  C.flush();
+  var made=addScripts(pick);
+  C.sel=made[0].id;ls.set("tp:sel",C.sel);C.loadEditor();C.renderStore();
+  impText.value="";I.items=[];I.close();
+  if(window.innerWidth<980)C.setTab("list");
+};
+$("#cImp").addEventListener("click",I.open);
+$("#cImp2").addEventListener("click",I.open);
+$("#impX").addEventListener("click",I.close);
+$("#impGo").addEventListener("click",I.preview);
+$("#impBack").addEventListener("click",function(){I.step(false)});
+$("#impSave").addEventListener("click",I.save);
+$("#impFile").addEventListener("change",function(e){
+  var f=e.target.files&&e.target.files[0];e.target.value="";
+  if(!f)return;
+  if(/\.(docx?|pdf|pages|odt)$/i.test(f.name)){
+    impText.value="";impText.placeholder="Esse tipo de arquivo não dá pra ler direto. Abra o arquivo, copie tudo (Ctrl+A, Ctrl+C) e cole aqui.";impText.focus();return;
+  }
+  var r=new FileReader();
+  r.onload=function(){impText.value=String(r.result||"");I.preview()};
+  r.readAsText(f,"UTF-8");
+});
 $$("#cTabs button").forEach(function(b){b.addEventListener("click",function(){C.setTab(b.dataset.tab)})});
 $("#cSwitch").addEventListener("click",function(){leave()});
 
