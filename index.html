@@ -412,7 +412,9 @@ textarea.script:focus,textarea.imp:focus{border-color:var(--brand-bright);box-sh
 .donext:hover:not(:disabled){background:rgba(43,212,154,.22)!important;border-color:rgba(43,212,154,.55)!important}
 .field,.frow{border-bottom-color:var(--line)}
 h3.sec{text-transform:uppercase;letter-spacing:.08em;font-size:.74rem;color:var(--faint)}
-.ol{background:var(--surface2);border-radius:12px}
+.ol{background:var(--surface2);border-radius:12px;flex:none;height:auto;line-height:1.4}
+.outline{max-height:340px;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.outline>*,.mbody>*,.ilist>*,.list>*{flex-shrink:0}
 .ol.cur{background:linear-gradient(135deg,rgba(79,123,255,.22),rgba(122,92,255,.16));border-color:rgba(124,150,255,.6)}
 
 @media (min-width:980px){.shell{grid-template-columns:340px minmax(0,1fr) 380px;gap:16px}}
