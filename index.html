@@ -121,6 +121,7 @@ input[type="range"]{width:100%;accent-color:var(--brand);height:32px;margin:0}
   .tabs{display:none}
   #pRemote,#pList{position:sticky;top:16px;max-height:calc(100vh - 100px);overflow:auto}
   .keys{display:block}
+  .only-m{display:none!important}
 }
 .keys{display:none;color:var(--faint);font-size:.82rem;margin:14px 0 0}
 
@@ -132,8 +133,23 @@ input[type="range"]{width:100%;accent-color:var(--brand);height:32px;margin:0}
 .item .open b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
 .item .open small{color:var(--muted)}
 .item .open .on{color:var(--live);font-weight:600}
+.item .btn.danger{padding:5px 10px}
+.chk{flex:none;width:40px;min-height:44px;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface2);display:grid;place-items:center;padding:0}
+.chk svg{width:20px;height:20px;fill:none;stroke:var(--faint);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.chk:hover{border-color:var(--live)}
+.chk[aria-pressed="true"]{background:var(--live);border-color:transparent}
+.chk[aria-pressed="true"] svg{stroke:#fff}
+.item.done .open b{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--faint)}
+.item.done .open .gv{color:var(--live);font-weight:600}
+.prog{display:flex;align-items:center;gap:10px;margin:-4px 0 12px;font-size:.85rem;color:var(--muted)}
+.prog .bar{flex:1;height:6px;border-radius:99px;background:var(--surface3);overflow:hidden}
+.prog .bar i{display:block;height:100%;width:0;background:var(--live);transition:width .2s}
+.btn.gv{color:var(--live)}
+.btn.gv[aria-pressed="true"]{background:var(--live-dim);border-color:transparent}
+.donext{width:100%;margin-top:10px;color:var(--live)}
+.donext b{font-weight:700}
 
-.title{flex:1;min-width:0;background:transparent;border:0;border-bottom:1px solid var(--line);padding:8px 2px;font-family:var(--font-display);font-size:1.2rem;font-weight:600}
+.title{flex:1 1 220px;min-width:0;background:transparent;border:0;border-bottom:1px solid var(--line);padding:8px 2px;font-family:var(--font-display);font-size:1.2rem;font-weight:600}
 .title:focus{outline:none;border-color:var(--brand)}
 textarea.script{width:100%;min-height:46vh;resize:vertical;background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);padding:16px;font-family:var(--font-read);font-size:1.12rem;line-height:1.6}
 textarea.script:focus{outline:none;border-color:var(--brand)}
@@ -256,6 +272,7 @@ textarea.imp:focus{outline:none;border-color:var(--brand)}
   <div class="shell" id="shell" data-tab="remote">
     <aside class="panel card" id="pList" aria-label="Roteiros">
       <div class="ph"><h2>Roteiros</h2><div class="ph-b"><button class="btn sm" id="cImp" type="button">Importar</button><button class="btn primary sm" id="cNew" type="button">Novo roteiro</button></div></div>
+      <div class="prog" id="cProg" hidden><span id="cProgT"></span><span class="bar"><i id="cProgB"></i></span></div>
       <div class="list" id="cList"></div>
       <p class="note" id="cListNote"></p>
     </aside>
@@ -264,7 +281,7 @@ textarea.imp:focus{outline:none;border-color:var(--brand)}
       <div id="cEditor">
         <div class="ph">
           <input class="title" id="cTitle" type="text" placeholder="Nome do roteiro" aria-label="Nome do roteiro" autocomplete="off">
-          <button class="btn" id="cSend" type="button">Enviar ao tablet</button>
+          <div class="ph-b"><button class="btn gv" id="cDone" type="button" aria-pressed="false">Marcar gravado</button><button class="btn" id="cSend" type="button">Enviar ao tablet</button></div>
         </div>
         <textarea class="script" id="cText" placeholder="Cole ou escreva o roteiro aqui. Separe os trechos com uma linha em branco." aria-label="Texto do roteiro"></textarea>
         <div class="meta"><span id="cCount"></span><span id="cEta"></span><span id="cSave"></span></div>
@@ -272,7 +289,7 @@ textarea.imp:focus{outline:none;border-color:var(--brand)}
       <div class="empty" id="cEmpty" hidden>
         <h2>Nenhum roteiro ainda</h2>
         <p>Crie o primeiro roteiro ou importe vários de uma vez. Eles ficam salvos e aparecem no tablet.</p>
-        <div class="ph-b"><button class="btn primary" id="cNew2" type="button">Novo roteiro</button><button class="btn" id="cImp2" type="button">Importar vários</button></div>
+        <div class="ph-b only-m"><button class="btn primary" id="cNew2" type="button">Novo roteiro</button><button class="btn" id="cImp2" type="button">Importar</button></div>
       </div>
     </main>
 
@@ -288,6 +305,7 @@ textarea.imp:focus{outline:none;border-color:var(--brand)}
           <button class="btn" id="rRestart" type="button">Voltar ao início</button>
           <button class="btn" id="rNext" type="button">Próximo trecho</button>
         </div>
+        <button class="btn donext" id="rDoneNext" type="button">✓ Gravado, próximo roteiro</button>
         <div class="field" style="margin-top:6px">
           <div class="fl"><label for="rSeek">Posição</label><output id="rSeekO">Sem texto</output></div>
           <input type="range" id="rSeek" min="0" max="1000" step="1" value="0">
@@ -621,11 +639,11 @@ function ref(p){return fdb.doc(ROOT+"/"+p)}
 
 /* ---------- Roteiros ---------- */
 var store={scripts:[],loaded:false,mode:"wait",slow:false,saving:false,writeError:null};
-function sorted(){return store.scripts.slice().sort(function(a,b){return b.updated-a.updated})}
+function sorted(){return store.scripts.slice().sort(function(a,b){return (num(b.pos,0)||b.updated)-(num(a.pos,0)||a.updated)})}
 var locks={};
 function queueWrite(s){
   var st=locks[s.id]||(locks[s.id]={busy:false,next:null});
-  st.next={title:s.title,text:s.text,updated:s.updated};
+  st.next={title:s.title,text:s.text,updated:s.updated,done:num(s.done,0),pos:num(s.pos,0)||s.updated};
   store.saving=true;
   if(st.busy)return;
   st.busy=true;
@@ -638,19 +656,29 @@ function queueWrite(s){
 function localSave(){ls.set("tp:scripts",store.scripts)}
 function saveScript(s){
   s.updated=Date.now();
-  store.scripts=store.scripts.map(function(x){return x.id===s.id?{id:s.id,title:s.title,text:s.text,updated:s.updated}:x});
+  var old=store.scripts.filter(function(x){return x.id===s.id})[0];
+  s.done=old?num(old.done,0):0;s.pos=old?(num(old.pos,0)||old.updated):s.updated;
+  store.scripts=store.scripts.map(function(x){return x.id===s.id?{id:s.id,title:s.title,text:s.text,updated:s.updated,done:s.done,pos:s.pos}:x});
   if(store.mode==="db")queueWrite(s);else{localSave();fire("store")}
 }
 function createScript(){
-  var s={id:uid(),title:"",text:"",updated:Date.now()};
+  var s={id:uid(),title:"",text:"",updated:Date.now(),done:0};s.pos=s.updated;
   store.scripts=[s].concat(store.scripts);
   if(store.mode==="db")queueWrite(s);else localSave();
   fire("store");
   return s;
 }
+/* Marca ou desmarca "gravado". Não mexe em "updated", então a ordem da lista não muda. */
+function setDone(id,v){
+  var s=store.scripts.filter(function(x){return x.id===id})[0];
+  if(!s)return;
+  s.done=v?Date.now():0;
+  if(store.mode==="db")queueWrite(s);else localSave();
+  fire("store");
+}
 function addScripts(list){
   var now=Date.now();
-  var made=list.map(function(x,i){return {id:uid()+i.toString(36),title:x.title||"",text:x.text||"",updated:now-i}});
+  var made=list.map(function(x,i){return {id:uid()+i.toString(36),title:x.title||"",text:x.text||"",updated:now-i,done:0,pos:now-i}});
   store.scripts=made.concat(store.scripts);
   if(store.mode==="db")made.forEach(queueWrite);else localSave();
   fire("store");
@@ -673,7 +701,7 @@ ready.then(function(ok){
   store.mode="db";
   var t=setTimeout(function(){if(!store.loaded){store.slow=true;fire("store")}},10000);
   fdb.collection(ROOT+"/scripts").onSnapshot(function(snap){
-    store.scripts=snap.docs.map(function(d){var x=d.data()||{};return{id:d.id,title:String(x.title||""),text:String(x.text||""),updated:num(x.updated,0)}});
+    store.scripts=snap.docs.map(function(d){var x=d.data()||{};return{id:d.id,title:String(x.title||""),text:String(x.text||""),updated:num(x.updated,0),done:num(x.done,0),pos:num(x.pos,0)}});
     store.loaded=true;store.slow=false;clearTimeout(t);
     fire("store");
   },function(e){clearTimeout(t);netFail(e);useLocal()});
@@ -1016,13 +1044,28 @@ C.renderList=function(){
   if(!store.loaded){note.textContent=store.slow?"Os roteiros ainda não responderam. Eles aparecem assim que a conexão voltar.":"Carregando roteiros…";return}
   note.textContent=store.mode==="local"?"Sem sincronização: os roteiros ficam só neste navegador.":"";
   var tp=tabletLive(),tsid=tp&&tp.sid;
+  var cs=C.cur(),cd=$("#cDone");
+  cd.hidden=!cs;
+  if(cs){cd.setAttribute("aria-pressed",String(!!cs.done));cd.textContent=cs.done?"✓ Gravado":"Marcar gravado"}
+  var all=store.scripts.length,nd=store.scripts.filter(function(x){return x.done}).length;
+  $("#cProg").hidden=!all;
+  $("#cProgT").textContent=nd===all&&all?"Todos gravados ("+all+")":nd+" de "+all+" gravados";
+  $("#cProgB").style.width=(all?Math.round(nd/all*100):0)+"%";
   sorted().forEach(function(s){
-    var row=document.createElement("div");row.className="item";
+    var row=document.createElement("div");row.className="item"+(s.done?" done":"");
+    var ck=document.createElement("button");ck.type="button";ck.className="chk";
+    ck.setAttribute("aria-pressed",String(!!s.done));
+    ck.setAttribute("aria-label",(s.done?"Desmarcar gravado: ":"Marcar como gravado: ")+titleOf(s));
+    ck.title=s.done?"Gravado. Toque para desmarcar":"Marcar como gravado";
+    ck.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+    ck.addEventListener("click",function(){setDone(s.id,!s.done)});
+    row.appendChild(ck);
     var open=document.createElement("button");open.type="button";open.className="open";
     if(s.id===C.sel)open.setAttribute("aria-current","true");
     var b=document.createElement("b");b.textContent=titleOf(s);
     var sm=document.createElement("small");var n=words(s.text);
     sm.textContent=n+(n===1?" palavra":" palavras")+" · "+ago(s.updated);
+    if(s.done){var gv=document.createElement("span");gv.className="gv";gv.textContent=" · gravado";sm.appendChild(gv)}
     if(tsid&&tsid===s.id){var on=document.createElement("span");on.className="on";on.textContent=" · no tablet";sm.appendChild(on)}
     open.appendChild(b);open.appendChild(sm);
     open.addEventListener("click",function(){C.select(s.id)});
@@ -1137,6 +1180,26 @@ function newScript(){C.flush();var s=createScript();C.sel=s.id;ls.set("tp:sel",s
 $("#cNew").addEventListener("click",newScript);
 $("#cNew2").addEventListener("click",newScript);
 $("#cSend").addEventListener("click",function(){C.flush();if(C.sel)cmd("load",{id:C.sel})});
+$("#cDone").addEventListener("click",function(){var s=C.cur();if(s){C.flush();setDone(s.id,!s.done)}});
+
+/* Gravado, próximo: marca o roteiro que está no tablet e manda o próximo da lista que ainda não foi gravado. */
+var dnT=0;
+$("#rDoneNext").addEventListener("click",function(){
+  var p=tabletLive(),cur=(p&&p.sid)||C.sel,b=this;
+  if(!cur)return;
+  C.flush();setDone(cur,true);
+  var list=sorted(),i=-1,next=null,j;
+  for(j=0;j<list.length;j++)if(list[j].id===cur)i=j;
+  for(j=i+1;j<list.length&&!next;j++)if(!list[j].done)next=list[j];
+  for(j=0;j<i&&!next;j++)if(!list[j].done)next=list[j];
+  clearTimeout(dnT);
+  if(next){
+    C.sel=next.id;ls.set("tp:sel",next.id);C.loadEditor();C.renderList();
+    if(p)cmd("load",{id:next.id});
+    b.textContent="Enviado: "+titleOf(next).slice(0,40);
+  }else b.textContent="Todos os roteiros gravados!";
+  dnT=setTimeout(function(){b.textContent="✓ Gravado, próximo roteiro"},2500);
+});
 
 /* ---------- Importar vários roteiros ---------- */
 var imp=$("#imp"),impText=$("#impText"),impList=$("#impList");

@@ -10,6 +10,13 @@ Link único: https://smk-agency.github.io/teleprompter/
 2. No celular (ou computador), abra o mesmo link e escolha **Celular**.
 3. Quando aparecer "Tablet conectado" no controle, é só gravar.
 
+## Marcar o que já foi gravado
+
+- Na lista, o quadrado à esquerda de cada roteiro marca ou desmarca **gravado**. Em cima aparece "3 de 8 gravados".
+- No editor, o botão **Marcar gravado** faz o mesmo.
+- No controle remoto, **✓ Gravado, próximo roteiro** marca o roteiro que está no tablet e já envia o próximo da lista que ainda não foi gravado.
+- A ordem da lista é a de criação/importação e não muda quando você edita um roteiro.
+
 ## Importar vários roteiros
 
 Em **Roteiros › Importar › Escolher arquivos**, selecione vários arquivos de uma vez (Word `.docx`, PDF ou `.txt`).
