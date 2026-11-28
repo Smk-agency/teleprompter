@@ -10,6 +10,12 @@ Link único: https://smk-agency.github.io/teleprompter/
 2. No celular (ou computador), abra o mesmo link e escolha **Celular**.
 3. Quando aparecer "Tablet conectado" no controle, é só gravar.
 
+## Conectar um tablet pelo QR code
+
+No celular, toque em **QR do tablet** (topo do controle) ou em **Mostrar QR code para o tablet** (aparece quando nenhum tablet está conectado).
+Aponte a câmera do tablet: o link abre o app direto no modo Tablet (`https://smk-agency.github.io/teleprompter/#tablet`).
+O desenho do QR está fixo no `index.html`; se o endereço do site mudar, ele precisa ser gerado de novo.
+
 ## Instalar como app (sem a barra do navegador)
 
 Na tela de escolha (ou no topo do controle) toque em **Instalar como app**.

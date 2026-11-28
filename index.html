@@ -299,6 +299,21 @@ h1,h2,h3{letter-spacing:-.015em}
 .ic-list{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01'/%3E%3C/svg%3E")}
 .ic-donext{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12.5l4 4L15 8.5M15 17h6M18 14l3 3-3 3'/%3E%3C/svg%3E")}
 
+.ic-qr{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='7' height='7' rx='1'/%3E%3Crect x='14' y='3' width='7' height='7' rx='1'/%3E%3Crect x='3' y='14' width='7' height='7' rx='1'/%3E%3Cpath d='M14 14h3v3M21 14v.01M14 21h3M20 17v4h1'/%3E%3C/svg%3E")}
+.ic-copy{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='12' height='12' rx='2'/%3E%3Cpath d='M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1'/%3E%3C/svg%3E")}
+
+/* QR code */
+dialog.qrm{width:min(460px,calc(100vw - 24px))}
+.qrb{align-items:center;text-align:left}
+.qrbox{width:min(300px,72vw);aspect-ratio:1;background:#fff;border-radius:20px;padding:14px;box-shadow:0 0 0 6px rgba(124,150,255,.25),0 20px 50px -12px rgba(91,124,255,.6)}
+.qrbox svg{display:block;width:100%;height:100%}
+.qrb .steps{align-self:stretch}
+.qrlink{align-self:stretch;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:8px 8px 8px 12px}
+.qrlink code{color:var(--muted);overflow-wrap:anywhere}
+.qrwait{width:100%;margin:0 0 12px}
+.linkbtn{background:none;border:0;padding:6px 0;color:var(--brand-bright);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.linkbtn.ic::before{width:18px;height:18px}
+
 /* cartões */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px;box-shadow:var(--shadow);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
 .ph h2{font-size:1.05rem;font-weight:700}
@@ -441,6 +456,7 @@ dialog.modal::backdrop{background:rgba(3,5,12,.7);-webkit-backdrop-filter:blur(6
         <svg class="pa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
       </button>
     </div>
+    <button class="linkbtn ic ic-qr" id="qrBtn3" type="button" style="align-self:flex-start">Mostrar QR code para abrir no tablet</button>
     <div class="inst" id="instBox" hidden>
       <button class="btn primary ic ic-download" id="instBtn" type="button">Instalar como app</button>
       <span class="note">Fica com ícone na tela inicial e abre em tela cheia, sem a barra do navegador.</span>
@@ -469,12 +485,28 @@ dialog.modal::backdrop{background:rgba(3,5,12,.7);-webkit-backdrop-filter:blur(6
   </div>
 </dialog>
 
+<!-- ============ QR code para abrir no tablet ============ -->
+<dialog class="modal qrm" id="qrD" aria-labelledby="qrH">
+  <div class="mwrap">
+    <div class="mhead"><h2 id="qrH">Conectar um tablet</h2><button class="btn ghost sm" id="qrX" type="button">Fechar</button></div>
+    <div class="mbody qrb">
+      <div class="qrbox"><svg role="img" aria-label="QR code do link do tablet" viewBox="-4 -4 41 41" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="-4" y="-4" width="41" height="41" fill="#fff"/><path fill="#0B0E12" d="M0 0h7v1h-7zM9 0h2v1h-2zM13 0h1v1h-1zM15 0h1v1h-1zM17 0h1v1h-1zM19 0h1v1h-1zM22 0h2v1h-2zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM12 1h4v1h-4zM18 1h1v1h-1zM20 1h5v1h-5zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM9 2h1v1h-1zM12 2h2v1h-2zM15 2h1v1h-1zM18 2h1v1h-1zM23 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h1v1h-1zM11 3h1v1h-1zM13 3h2v1h-2zM16 3h3v1h-3zM20 3h1v1h-1zM22 3h2v1h-2zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM9 4h1v1h-1zM13 4h2v1h-2zM18 4h3v1h-3zM23 4h1v1h-1zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM12 5h2v1h-2zM15 5h2v1h-2zM18 5h2v1h-2zM22 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM12 7h1v1h-1zM15 7h3v1h-3zM21 7h1v1h-1zM23 7h2v1h-2zM0 8h1v1h-1zM3 8h1v1h-1zM5 8h2v1h-2zM8 8h1v1h-1zM10 8h2v1h-2zM13 8h2v1h-2zM16 8h1v1h-1zM21 8h1v1h-1zM23 8h3v1h-3zM27 8h1v1h-1zM0 9h2v1h-2zM3 9h3v1h-3zM8 9h2v1h-2zM13 9h1v1h-1zM17 9h1v1h-1zM20 9h2v1h-2zM24 9h4v1h-4zM32 9h1v1h-1zM0 10h1v1h-1zM5 10h3v1h-3zM9 10h2v1h-2zM13 10h2v1h-2zM16 10h1v1h-1zM18 10h2v1h-2zM21 10h1v1h-1zM26 10h3v1h-3zM30 10h1v1h-1zM32 10h1v1h-1zM0 11h1v1h-1zM2 11h2v1h-2zM8 11h1v1h-1zM11 11h1v1h-1zM13 11h1v1h-1zM16 11h1v1h-1zM18 11h1v1h-1zM21 11h1v1h-1zM24 11h3v1h-3zM28 11h2v1h-2zM32 11h1v1h-1zM1 12h3v1h-3zM5 12h2v1h-2zM9 12h2v1h-2zM12 12h1v1h-1zM14 12h3v1h-3zM18 12h1v1h-1zM20 12h2v1h-2zM23 12h1v1h-1zM25 12h3v1h-3zM29 12h1v1h-1zM31 12h2v1h-2zM1 13h1v1h-1zM3 13h2v1h-2zM7 13h1v1h-1zM10 13h3v1h-3zM14 13h2v1h-2zM18 13h1v1h-1zM20 13h3v1h-3zM24 13h1v1h-1zM26 13h1v1h-1zM28 13h2v1h-2zM31 13h2v1h-2zM0 14h1v1h-1zM4 14h3v1h-3zM11 14h1v1h-1zM14 14h6v1h-6zM23 14h1v1h-1zM25 14h2v1h-2zM28 14h4v1h-4zM1 15h1v1h-1zM5 15h1v1h-1zM7 15h1v1h-1zM10 15h1v1h-1zM13 15h2v1h-2zM16 15h2v1h-2zM20 15h3v1h-3zM26 15h2v1h-2zM31 15h1v1h-1zM0 16h3v1h-3zM6 16h1v1h-1zM9 16h2v1h-2zM13 16h1v1h-1zM15 16h1v1h-1zM17 16h1v1h-1zM20 16h3v1h-3zM24 16h1v1h-1zM26 16h1v1h-1zM28 16h2v1h-2zM31 16h1v1h-1zM1 17h1v1h-1zM4 17h1v1h-1zM8 17h1v1h-1zM10 17h2v1h-2zM13 17h2v1h-2zM16 17h3v1h-3zM23 17h1v1h-1zM27 17h1v1h-1zM29 17h1v1h-1zM31 17h1v1h-1zM0 18h1v1h-1zM2 18h2v1h-2zM5 18h5v1h-5zM11 18h2v1h-2zM14 18h1v1h-1zM17 18h1v1h-1zM20 18h1v1h-1zM25 18h2v1h-2zM30 18h3v1h-3zM1 19h2v1h-2zM4 19h2v1h-2zM7 19h1v1h-1zM9 19h1v1h-1zM11 19h2v1h-2zM15 19h2v1h-2zM19 19h4v1h-4zM25 19h1v1h-1zM27 19h1v1h-1zM3 20h1v1h-1zM6 20h6v1h-6zM13 20h1v1h-1zM15 20h1v1h-1zM17 20h1v1h-1zM19 20h1v1h-1zM21 20h1v1h-1zM24 20h2v1h-2zM27 20h1v1h-1zM31 20h2v1h-2zM1 21h1v1h-1zM7 21h4v1h-4zM14 21h2v1h-2zM17 21h1v1h-1zM19 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM31 21h2v1h-2zM0 22h2v1h-2zM3 22h1v1h-1zM5 22h2v1h-2zM9 22h1v1h-1zM11 22h1v1h-1zM13 22h2v1h-2zM16 22h1v1h-1zM19 22h4v1h-4zM25 22h3v1h-3zM32 22h1v1h-1zM1 23h2v1h-2zM4 23h2v1h-2zM7 23h1v1h-1zM9 23h1v1h-1zM13 23h3v1h-3zM18 23h4v1h-4zM23 23h2v1h-2zM28 23h2v1h-2zM32 23h1v1h-1zM0 24h1v1h-1zM6 24h1v1h-1zM8 24h2v1h-2zM16 24h2v1h-2zM20 24h2v1h-2zM23 24h6v1h-6zM32 24h1v1h-1zM8 25h4v1h-4zM13 25h2v1h-2zM17 25h1v1h-1zM19 25h1v1h-1zM21 25h4v1h-4zM28 25h2v1h-2zM32 25h1v1h-1zM0 26h7v1h-7zM9 26h6v1h-6zM16 26h3v1h-3zM20 26h1v1h-1zM24 26h1v1h-1zM26 26h1v1h-1zM28 26h4v1h-4zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h2v1h-2zM13 27h2v1h-2zM16 27h4v1h-4zM21 27h2v1h-2zM24 27h1v1h-1zM28 27h1v1h-1zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM9 28h1v1h-1zM13 28h1v1h-1zM15 28h1v1h-1zM18 28h1v1h-1zM20 28h3v1h-3zM24 28h6v1h-6zM32 28h1v1h-1zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h3v1h-3zM13 29h1v1h-1zM15 29h2v1h-2zM18 29h6v1h-6zM26 29h1v1h-1zM28 29h3v1h-3zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM10 30h1v1h-1zM13 30h6v1h-6zM20 30h4v1h-4zM28 30h2v1h-2zM32 30h1v1h-1zM0 31h1v1h-1zM6 31h1v1h-1zM9 31h1v1h-1zM11 31h3v1h-3zM17 31h1v1h-1zM20 31h2v1h-2zM23 31h2v1h-2zM0 32h7v1h-7zM8 32h1v1h-1zM10 32h1v1h-1zM14 32h3v1h-3zM18 32h1v1h-1zM20 32h2v1h-2zM23 32h2v1h-2zM26 32h1v1h-1zM28 32h2v1h-2zM31 32h1v1h-1z"/></svg></div>
+      <ol class="steps">
+        <li>No tablet, abra a <b>câmera</b> e aponte para o código.</li>
+        <li>Toque no link que aparecer. O app abre direto no modo <b>Tablet</b>.</li>
+      </ol>
+      <div class="qrlink"><code id="qrUrl">smk-agency.github.io/teleprompter</code><button class="btn sm ic ic-copy" id="qrCopy" type="button">Copiar link</button></div>
+    </div>
+  </div>
+</dialog>
+
 <!-- ============ Controle ============ -->
 <section id="ctl" hidden>
   <header class="top">
     <div class="brand"><span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5l8 7-8 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Teleprompter <small>SMK</small></div>
     <div class="top-r">
       <span class="pill" id="cPill" data-s="wait"><i></i><span id="cPillT">Conectando</span></span>
+      <button class="btn ghost sm ic ic-qr" id="qrBtn" type="button">QR do tablet</button>
       <button class="btn ghost sm ic ic-download" id="instBtn2" type="button" hidden>Instalar app</button>
       <button class="btn ghost sm ic ic-swap" id="cSwitch" type="button">Trocar modo</button>
     </div>
@@ -507,6 +539,7 @@ dialog.modal::backdrop{background:rgba(3,5,12,.7);-webkit-backdrop-filter:blur(6
     <section class="panel card" id="pRemote" aria-label="Controle remoto">
       <div class="ph"><h2>Controle remoto</h2></div>
       <div class="hint" id="rHint" hidden></div>
+      <button class="btn primary ic ic-qr qrwait" id="qrBtn2" type="button" hidden>Mostrar QR code para o tablet</button>
       <fieldset id="rSet" disabled>
         <button class="play" id="rPlay" type="button" data-on="0">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path id="rPlayI" d="M8 5v14l11-7z"/></svg><span id="rPlayT">Iniciar</span>
@@ -1347,6 +1380,7 @@ C.renderRemote=function(){
   rSet.disabled=!p;
 
   rHint.classList.toggle("bad",NET.state==="denied"||NET.state==="off");
+  $("#qrBtn2").hidden=!!p||NET.state==="denied"||NET.state==="off";
   rHint.textContent="";
   if(NET.state==="denied"){
     rHint.hidden=false;
@@ -1355,7 +1389,7 @@ C.renderRemote=function(){
   }else if(NET.state==="off"){
     rHint.hidden=false;rHint.textContent="Sem conexão com o Firebase. Você ainda pode escrever roteiros neste aparelho.";
   }else if(!p){
-    rHint.hidden=false;rHint.textContent="Abra este mesmo link no tablet e escolha Tablet.";
+    rHint.hidden=false;rHint.textContent="Nenhum tablet conectado. Escaneie o QR code com a câmera do tablet, ou abra este mesmo link nele e escolha Tablet.";
   }else rHint.hidden=true;
 
   var send=$("#cSend"),onTablet=!!(p&&p.sid&&p.sid===C.sel);
@@ -1548,6 +1582,26 @@ C.stop=function(){
 };
 onEvt("store",function(){if(role==="controle")C.renderStore()});
 onEvt("live",function(){if(role==="controle"){C.renderRemote();C.renderList()}});
+
+/* ======================================================================
+   QR CODE PARA ABRIR NO TABLET (o desenho do QR é fixo no HTML: abre .../teleprompter/#tablet)
+   ====================================================================== */
+var QR_URL="https://smk-agency.github.io/teleprompter/#tablet";
+function qrOpen(){
+  var d=$("#qrD");$("#qrCopy").textContent="Copiar link";
+  if(d.showModal)d.showModal();else d.setAttribute("open","");
+}
+function qrClose(){var d=$("#qrD");if(d.close)d.close();else d.removeAttribute("open")}
+$("#qrBtn").addEventListener("click",qrOpen);
+$("#qrBtn2").addEventListener("click",qrOpen);
+$("#qrBtn3").addEventListener("click",qrOpen);
+$("#qrX").addEventListener("click",qrClose);
+$("#qrD").addEventListener("click",function(e){if(e.target===this)qrClose()});
+$("#qrCopy").addEventListener("click",function(){
+  var b=this,done=function(ok){b.textContent=ok?"Link copiado":"Não deu para copiar";setTimeout(function(){b.textContent="Copiar link"},2000)};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(QR_URL).then(function(){done(true)},function(){done(false)});
+  else done(false);
+});
 
 /* ======================================================================
    INSTALAR COMO APP
