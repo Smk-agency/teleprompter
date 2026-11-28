@@ -251,6 +251,174 @@ textarea.imp:focus{outline:none;border-color:var(--brand)}
 #fim{position:absolute;left:0;right:0;bottom:calc(120px + env(safe-area-inset-bottom,0px));text-align:center;z-index:3;display:none;font-weight:700;color:#5B8CFF;font-size:1.2rem;pointer-events:none;font-family:var(--font-display)}
 #fim.on{display:block}
 @media (prefers-reduced-motion: reduce){.tbar,.sw span,.sw span::after{transition:none}}
+
+/* =====================================================================
+   VISUAL 2: mais cor, contraste e profundidade (camada por cima da base)
+   ===================================================================== */
+:root{
+  --bg:#070A13; --surface:rgba(20,26,42,.78); --surface2:rgba(255,255,255,.055); --surface3:rgba(255,255,255,.09);
+  --line:rgba(255,255,255,.09); --line2:rgba(255,255,255,.16);
+  --ink:#F4F6FB; --muted:#A9B1C4; --faint:#6E788E;
+  --brand:#5B7CFF; --brand-bright:#7C96FF; --brand-dim:rgba(91,124,255,.16);
+  --violet:#8B5CF6;
+  --grad:linear-gradient(135deg,#4F7BFF 0%,#7A5CFF 100%);
+  --grad-live:linear-gradient(135deg,#22C98F 0%,#0FA874 100%);
+  --live:#2BD49A; --live-dim:rgba(43,212,154,.14);
+  --amber:#F5B83D; --amber-dim:rgba(245,184,61,.14); --red:#FF6B57; --red-dim:rgba(255,107,87,.13);
+  --radius:12px; --radius-lg:18px;
+  --shadow:0 1px 0 rgba(255,255,255,.04) inset,0 12px 32px -12px rgba(0,0,0,.6);
+  --glow:0 10px 28px -8px rgba(98,110,255,.65);
+}
+body{
+  background:
+    radial-gradient(900px 520px at 0% -8%,rgba(79,123,255,.20),transparent 62%),
+    radial-gradient(760px 480px at 105% 0%,rgba(139,92,246,.16),transparent 60%),
+    radial-gradient(700px 500px at 50% 115%,rgba(43,212,154,.07),transparent 60%),
+    var(--bg);
+  background-attachment:fixed;
+}
+::selection{background:rgba(124,150,255,.35)}
+:focus-visible{outline:2px solid var(--brand-bright);outline-offset:3px}
+h1,h2,h3{letter-spacing:-.015em}
+
+/* ícones nos botões (máscara: sobrevive quando o JS troca o texto do botão) */
+.ic{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.ic::before{content:"";width:18px;height:18px;flex:none;background:currentColor;-webkit-mask:var(--i) center/contain no-repeat;mask:var(--i) center/contain no-repeat}
+.ic-plus{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E")}
+.ic-upload{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 15V4M7 9l5-5 5 5M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3'/%3E%3C/svg%3E")}
+.ic-send{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 3L10 14M21 3l-6.5 18-4-8.5L2 8.5z'/%3E%3C/svg%3E")}
+.ic-check{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E")}
+.ic-swap{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 4L3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7'/%3E%3C/svg%3E")}
+.ic-download{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v11M7 10l5 5 5-5M4 20h16'/%3E%3C/svg%3E")}
+.ic-prev{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 6l-6 6 6 6'/%3E%3C/svg%3E")}
+.ic-next{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6l6 6-6 6'/%3E%3C/svg%3E")}
+.ic-restart{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 12a8.5 8.5 0 1 0 2.6-6.1M3.5 4v5h5'/%3E%3C/svg%3E")}
+.ic-trash{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3'/%3E%3C/svg%3E")}
+.ic-remote{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M10 8.5v7l5.5-3.5z'/%3E%3C/svg%3E")}
+.ic-pencil{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z'/%3E%3C/svg%3E")}
+.ic-list{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01'/%3E%3C/svg%3E")}
+.ic-donext{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12.5l4 4L15 8.5M15 17h6M18 14l3 3-3 3'/%3E%3C/svg%3E")}
+
+/* cartões */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px;box-shadow:var(--shadow);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.ph h2{font-size:1.05rem;font-weight:700}
+.note{color:var(--muted)}
+
+/* botões */
+.btn{background:var(--surface2);border:1px solid var(--line2);border-radius:var(--radius);padding:10px 16px;min-height:44px;font-weight:600;color:var(--ink);
+  transition:background .15s,border-color .15s,transform .12s,box-shadow .15s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover:not(:disabled){background:var(--surface3);border-color:rgba(255,255,255,.24);transform:translateY(-1px)}
+.btn:active:not(:disabled){transform:translateY(0) scale(.98)}
+.btn:disabled{opacity:.45}
+.btn.primary{background:var(--grad);border-color:transparent;color:#fff;box-shadow:var(--glow)}
+.btn.primary:hover:not(:disabled){background:var(--grad);filter:brightness(1.1);box-shadow:0 14px 32px -8px rgba(98,110,255,.8)}
+.btn.ghost{background:transparent;border-color:var(--line)}
+.btn.ghost:hover:not(:disabled){background:var(--surface2)}
+.btn.sm{min-height:38px;padding:6px 13px;font-size:.88rem;border-radius:10px}
+.btn.sm.ic::before{width:16px;height:16px}
+.btn.danger{color:var(--red);border-color:transparent;background:transparent}
+.btn.danger:hover:not(:disabled){background:var(--red-dim);border-color:transparent}
+.btn.gv{color:var(--live);border-color:rgba(43,212,154,.35);background:var(--live-dim)}
+.btn.gv[aria-pressed="true"]{background:var(--grad-live);color:#fff;border-color:transparent;box-shadow:0 10px 24px -10px rgba(34,201,143,.7)}
+
+/* status */
+.pill{padding:7px 13px;background:var(--surface2);border-color:var(--line2);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.pill[data-s="live"]{background:var(--live-dim);border-color:rgba(43,212,154,.35);color:#B8F5DD}
+.pill[data-s="live"] i{background:var(--live);box-shadow:0 0 0 4px rgba(43,212,154,.22),0 0 12px var(--live)}
+.pill[data-s="wait"]{background:var(--amber-dim);border-color:rgba(245,184,61,.32);color:#FBE2AE}
+.pill[data-s="wait"] i{background:var(--amber);box-shadow:0 0 10px var(--amber);animation:pulse 1.6s ease-in-out infinite}
+.pill[data-s="off"]{background:var(--red-dim);border-color:rgba(255,107,87,.35);color:#FFC9C0}
+@keyframes pulse{50%{opacity:.35}}
+.brand{font-size:1.12rem}
+.mark{width:36px;height:36px;border-radius:11px;background:var(--grad);box-shadow:var(--glow)}
+.hint{background:linear-gradient(135deg,rgba(79,123,255,.16),rgba(122,92,255,.12));border:1px solid rgba(124,150,255,.35);border-radius:14px;padding:12px 14px;color:#DCE3FF}
+.hint.bad{background:var(--red-dim);border-color:rgba(255,107,87,.4);color:#FFD9D2}
+
+/* formulários */
+input[type="range"]{accent-color:var(--brand-bright)}
+.sw span{background:rgba(255,255,255,.1);border-color:var(--line2)}
+.sw input:checked + span{background:var(--grad)}
+.seg{border-color:var(--line2);border-radius:var(--radius);background:var(--surface2);padding:3px;gap:3px}
+.seg button{background:transparent;border-radius:9px;min-height:36px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--grad);color:#fff;box-shadow:var(--glow)}
+fieldset:disabled{opacity:.5;filter:saturate(.6)}
+.title{border-bottom-color:var(--line2);font-size:1.35rem;font-weight:700}
+.title:focus{border-color:var(--brand-bright)}
+textarea.script,textarea.imp{background:rgba(0,0,0,.28);border:1px solid var(--line2);border-radius:14px;transition:border-color .15s,box-shadow .15s}
+textarea.script:focus,textarea.imp:focus{border-color:var(--brand-bright);box-shadow:0 0 0 4px rgba(91,124,255,.18)}
+.meta{color:var(--faint)}
+
+/* tela de escolha */
+.pick-wrap{gap:22px}
+.pick-wrap h1{font-size:clamp(1.9rem,6vw,2.8rem);font-weight:700;letter-spacing:-.03em}
+.pick-wrap h1 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pick-wrap .sub{font-size:1.02rem}
+.pick-grid{gap:14px}
+.pick{position:relative;flex-direction:row;align-items:center;gap:16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:20px;min-height:0;
+  box-shadow:var(--shadow);transition:transform .15s,border-color .15s,box-shadow .15s;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.pick:hover{transform:translateY(-2px);border-color:rgba(124,150,255,.55);box-shadow:0 18px 40px -16px rgba(91,124,255,.55)}
+.pick .pi{flex:none;width:58px;height:58px;border-radius:16px;display:grid;place-items:center;background:var(--grad);color:#fff;box-shadow:var(--glow)}
+.pick[data-role="controle"] .pi{background:linear-gradient(135deg,#8B5CF6,#EC4899);box-shadow:0 10px 28px -8px rgba(200,80,220,.6)}
+.pick .pi svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.pick .pt{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1;color:var(--ink)}
+.pick strong{font-size:1.35rem}
+.pick .pd{color:var(--muted)}
+.pick .pa{flex:none;width:22px;height:22px;color:var(--faint);transition:transform .15s,color .15s}
+.pick:hover .pa{transform:translateX(3px);color:var(--ink)}
+
+/* lista de roteiros */
+.list{gap:10px}
+.item{align-items:stretch;gap:6px}
+.item .open{background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:11px 13px;transition:border-color .15s,background .15s}
+.item .open:hover{border-color:var(--line2);background:var(--surface3)}
+.item .open[aria-current="true"]{background:linear-gradient(135deg,rgba(79,123,255,.2),rgba(122,92,255,.14));border-color:rgba(124,150,255,.6)}
+.item .open small{color:var(--faint)}
+.item .btn.danger{width:40px;padding:0;font-size:0;gap:0;border-radius:12px;color:var(--faint)}
+.item .btn.danger::before{width:18px;height:18px}
+.item .btn.danger:hover{color:var(--red)}
+.item .btn.danger.armed{width:auto;padding:0 10px;font-size:.82rem;gap:6px;color:#fff;background:#E5484D}
+.item .btn.danger.armed::before{display:none}
+.chk{width:40px;border-radius:12px;background:var(--surface2);border:1.5px solid var(--line2);transition:background .15s,border-color .15s,transform .12s}
+.chk:hover{border-color:var(--live);transform:scale(1.04)}
+.chk svg{stroke:rgba(255,255,255,.22)}
+.chk[aria-pressed="true"]{background:var(--grad-live);box-shadow:0 8px 20px -10px rgba(34,201,143,.8)}
+.item.done .open b{color:var(--muted)}
+.prog{margin:-2px 0 14px;color:var(--muted);font-weight:600}
+.prog .bar{height:8px;background:rgba(255,255,255,.07)}
+.prog .bar i{background:var(--grad-live);box-shadow:0 0 12px rgba(43,212,154,.6)}
+
+/* controle remoto */
+.play{min-height:84px;border-radius:20px;background:var(--grad);box-shadow:0 16px 36px -12px rgba(98,110,255,.8);font-size:1.4rem;letter-spacing:-.01em;transition:transform .12s,filter .15s}
+.play:hover{background:var(--grad);filter:brightness(1.08)}
+.play[data-on="1"]{background:linear-gradient(135deg,#F5B83D,#F07B3F);border-color:transparent;box-shadow:0 16px 36px -12px rgba(245,150,61,.7);color:#1A1205}
+.trio .btn{flex-direction:column;gap:4px;min-height:64px;font-size:.8rem;border-radius:14px}
+.trio .btn.ic::before{width:20px;height:20px}
+.donext{min-height:52px;border-radius:14px;background:var(--live-dim);border-color:rgba(43,212,154,.35);color:var(--live);font-weight:700}
+.donext:hover:not(:disabled){background:rgba(43,212,154,.22)!important;border-color:rgba(43,212,154,.55)!important}
+.field,.frow{border-bottom-color:var(--line)}
+h3.sec{text-transform:uppercase;letter-spacing:.08em;font-size:.74rem;color:var(--faint)}
+.ol{background:var(--surface2);border-radius:12px}
+.ol.cur{background:linear-gradient(135deg,rgba(79,123,255,.22),rgba(122,92,255,.16));border-color:rgba(124,150,255,.6)}
+
+@media (min-width:980px){.shell{grid-template-columns:340px minmax(0,1fr) 380px;gap:16px}}
+@media (min-width:980px) and (max-width:1199px){.shell{grid-template-columns:300px minmax(0,1fr) 340px}}
+
+/* abas do celular */
+.tabs{background:rgba(12,16,28,.82);border-top:1px solid var(--line);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.tabs button{flex-direction:column;gap:3px;min-height:54px;font-size:.78rem;border-radius:14px;transition:background .15s,color .15s}
+.tabs button.ic::before{width:22px;height:22px}
+.tabs button[aria-selected="true"]{background:linear-gradient(135deg,rgba(79,123,255,.24),rgba(122,92,255,.18));color:#fff}
+
+/* janelas */
+dialog.modal{background:rgba(18,23,38,.96);border:1px solid var(--line2);border-radius:20px;box-shadow:0 30px 80px -20px rgba(0,0,0,.8)}
+dialog.modal::backdrop{background:rgba(3,5,12,.7);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.irow{background:var(--surface2);border-radius:14px}
+.empty h2{font-size:1.4rem}
+
+/* tablet: só os botões sobrepostos ganham cor; a área de leitura continua preta */
+.pb{border-radius:12px}
+.pb[aria-pressed="true"]{background:var(--grad)}
+#tPlay{background:var(--grad);box-shadow:var(--glow)}
 </style>
 </head>
 <body>
@@ -259,14 +427,22 @@ textarea.imp:focus{outline:none;border-color:var(--brand)}
 <section id="picker" hidden>
   <div class="pick-wrap">
     <div class="brand"><span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5l8 7-8 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Teleprompter <small>SMK</small></div>
-    <h1>O que este aparelho vai fazer?</h1>
+    <h1>O que este <em>aparelho</em> vai fazer?</h1>
     <p class="sub">Abra este mesmo link no tablet e no celular. O tablet mostra o texto e o celular comanda tudo em tempo real.</p>
     <div class="pick-grid">
-      <button class="pick" type="button" data-role="tablet"><strong>Tablet</strong><span>Fica parado na frente da câmera e mostra o roteiro rolando.</span></button>
-      <button class="pick" type="button" data-role="controle"><strong>Celular</strong><span>Escreve o roteiro e comanda o tablet. Também funciona no computador.</span></button>
+      <button class="pick" type="button" data-role="tablet">
+        <span class="pi" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M7 9h10M7 12.5h10M7 16h6"/></svg></span>
+        <span class="pt"><strong>Tablet</strong><span class="pd">Fica na frente da câmera e mostra o roteiro rolando.</span></span>
+        <svg class="pa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+      <button class="pick" type="button" data-role="controle">
+        <span class="pi" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 6h3M12 18h.01"/><path d="M10.5 10.2v3.6l3-1.8z"/></svg></span>
+        <span class="pt"><strong>Celular</strong><span class="pd">Escreve o roteiro e comanda o tablet. Também funciona no computador.</span></span>
+        <svg class="pa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
     </div>
     <div class="inst" id="instBox" hidden>
-      <button class="btn primary" id="instBtn" type="button">Instalar como app</button>
+      <button class="btn primary ic ic-download" id="instBtn" type="button">Instalar como app</button>
       <span class="note">Fica com ícone na tela inicial e abre em tela cheia, sem a barra do navegador.</span>
     </div>
   </div>
@@ -299,14 +475,14 @@ textarea.imp:focus{outline:none;border-color:var(--brand)}
     <div class="brand"><span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5l8 7-8 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Teleprompter <small>SMK</small></div>
     <div class="top-r">
       <span class="pill" id="cPill" data-s="wait"><i></i><span id="cPillT">Conectando</span></span>
-      <button class="btn ghost sm" id="instBtn2" type="button" hidden>Instalar app</button>
-      <button class="btn ghost sm" id="cSwitch" type="button">Trocar modo</button>
+      <button class="btn ghost sm ic ic-download" id="instBtn2" type="button" hidden>Instalar app</button>
+      <button class="btn ghost sm ic ic-swap" id="cSwitch" type="button">Trocar modo</button>
     </div>
   </header>
 
   <div class="shell" id="shell" data-tab="remote">
     <aside class="panel card" id="pList" aria-label="Roteiros">
-      <div class="ph"><h2>Roteiros</h2><div class="ph-b"><button class="btn sm" id="cImp" type="button">Importar</button><button class="btn primary sm" id="cNew" type="button">Novo roteiro</button></div></div>
+      <div class="ph"><h2>Roteiros</h2><div class="ph-b"><button class="btn sm ic ic-upload" id="cImp" type="button">Importar</button><button class="btn primary sm ic ic-plus" id="cNew" type="button">Novo roteiro</button></div></div>
       <div class="prog" id="cProg" hidden><span id="cProgT"></span><span class="bar"><i id="cProgB"></i></span></div>
       <div class="list" id="cList"></div>
       <p class="note" id="cListNote"></p>
@@ -316,7 +492,7 @@ textarea.imp:focus{outline:none;border-color:var(--brand)}
       <div id="cEditor">
         <div class="ph">
           <input class="title" id="cTitle" type="text" placeholder="Nome do roteiro" aria-label="Nome do roteiro" autocomplete="off">
-          <div class="ph-b"><button class="btn gv" id="cDone" type="button" aria-pressed="false">Marcar gravado</button><button class="btn" id="cSend" type="button">Enviar ao tablet</button></div>
+          <div class="ph-b"><button class="btn gv ic ic-check" id="cDone" type="button" aria-pressed="false">Marcar gravado</button><button class="btn ic ic-send" id="cSend" type="button">Enviar ao tablet</button></div>
         </div>
         <textarea class="script" id="cText" placeholder="Cole ou escreva o roteiro aqui. Separe os trechos com uma linha em branco." aria-label="Texto do roteiro"></textarea>
         <div class="meta"><span id="cCount"></span><span id="cEta"></span><span id="cSave"></span></div>
@@ -324,7 +500,7 @@ textarea.imp:focus{outline:none;border-color:var(--brand)}
       <div class="empty" id="cEmpty" hidden>
         <h2>Nenhum roteiro ainda</h2>
         <p>Crie o primeiro roteiro ou importe vários de uma vez. Eles ficam salvos e aparecem no tablet.</p>
-        <div class="ph-b only-m"><button class="btn primary" id="cNew2" type="button">Novo roteiro</button><button class="btn" id="cImp2" type="button">Importar</button></div>
+        <div class="ph-b only-m"><button class="btn primary ic ic-plus" id="cNew2" type="button">Novo roteiro</button><button class="btn ic ic-upload" id="cImp2" type="button">Importar</button></div>
       </div>
     </main>
 
@@ -336,11 +512,11 @@ textarea.imp:focus{outline:none;border-color:var(--brand)}
           <svg viewBox="0 0 24 24" aria-hidden="true"><path id="rPlayI" d="M8 5v14l11-7z"/></svg><span id="rPlayT">Iniciar</span>
         </button>
         <div class="trio">
-          <button class="btn" id="rPrev" type="button">Trecho anterior</button>
-          <button class="btn" id="rRestart" type="button">Voltar ao início</button>
-          <button class="btn" id="rNext" type="button">Próximo trecho</button>
+          <button class="btn ic ic-prev" id="rPrev" type="button">Trecho anterior</button>
+          <button class="btn ic ic-restart" id="rRestart" type="button">Voltar ao início</button>
+          <button class="btn ic ic-next" id="rNext" type="button">Próximo trecho</button>
         </div>
-        <button class="btn donext" id="rDoneNext" type="button">✓ Gravado, próximo roteiro</button>
+        <button class="btn donext ic ic-donext" id="rDoneNext" type="button">Gravado, próximo roteiro</button>
         <div class="field" style="margin-top:6px">
           <div class="fl"><label for="rSeek">Posição</label><output id="rSeekO">Sem texto</output></div>
           <input type="range" id="rSeek" min="0" max="1000" step="1" value="0">
@@ -396,22 +572,22 @@ textarea.imp:focus{outline:none;border-color:var(--brand)}
       </div>
       <div class="mfoot">
         <div class="ph-b" id="impFootIn">
-          <label class="btn" for="impFile" id="impFileL" style="display:inline-flex;align-items:center">Escolher arquivos</label>
+          <label class="btn ic ic-upload" for="impFile" id="impFileL">Escolher arquivos</label>
           <input type="file" id="impFile" multiple accept=".docx,.pdf,.txt,.md,.text,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown" hidden>
-          <button class="btn primary" id="impGo" type="button">Separar roteiros</button>
+          <button class="btn primary ic ic-list" id="impGo" type="button">Separar roteiros</button>
         </div>
         <div class="ph-b" id="impFootOut" hidden>
           <button class="btn ghost" id="impBack" type="button">Voltar</button>
-          <button class="btn primary" id="impSave" type="button">Importar</button>
+          <button class="btn primary ic ic-check" id="impSave" type="button">Importar</button>
         </div>
       </div>
     </div>
   </dialog>
 
   <nav class="tabs" id="cTabs" aria-label="Seções">
-    <button type="button" data-tab="remote" aria-selected="true">Controle</button>
-    <button type="button" data-tab="edit" aria-selected="false">Roteiro</button>
-    <button type="button" data-tab="list" aria-selected="false">Lista</button>
+    <button class="ic ic-remote" type="button" data-tab="remote" aria-selected="true">Controle</button>
+    <button class="ic ic-pencil" type="button" data-tab="edit" aria-selected="false">Roteiro</button>
+    <button class="ic ic-list" type="button" data-tab="list" aria-selected="false">Lista</button>
   </nav>
 </section>
 
@@ -1081,7 +1257,7 @@ C.renderList=function(){
   var tp=tabletLive(),tsid=tp&&tp.sid;
   var cs=C.cur(),cd=$("#cDone");
   cd.hidden=!cs;
-  if(cs){cd.setAttribute("aria-pressed",String(!!cs.done));cd.textContent=cs.done?"✓ Gravado":"Marcar gravado"}
+  if(cs){cd.setAttribute("aria-pressed",String(!!cs.done));cd.textContent=cs.done?"Gravado":"Marcar gravado"}
   var all=store.scripts.length,nd=store.scripts.filter(function(x){return x.done}).length;
   $("#cProg").hidden=!all;
   $("#cProgT").textContent=nd===all&&all?"Todos gravados ("+all+")":nd+" de "+all+" gravados";
@@ -1104,7 +1280,7 @@ C.renderList=function(){
     if(tsid&&tsid===s.id){var on=document.createElement("span");on.className="on";on.textContent=" · no tablet";sm.appendChild(on)}
     open.appendChild(b);open.appendChild(sm);
     open.addEventListener("click",function(){C.select(s.id)});
-    var del=document.createElement("button");del.type="button";del.className="btn danger sm";
+    var del=document.createElement("button");del.type="button";del.className="btn danger sm ic ic-trash"+(C.armed===s.id?" armed":"");del.setAttribute("aria-label",C.armed===s.id?"Confirmar apagar":"Apagar "+titleOf(s));
     del.textContent=C.armed===s.id?"Apagar?":"Apagar";
     del.addEventListener("click",function(){
       if(C.armed!==s.id){C.armed=s.id;C.renderList();return}
@@ -1233,7 +1409,7 @@ $("#rDoneNext").addEventListener("click",function(){
     if(p)cmd("load",{id:next.id});
     b.textContent="Enviado: "+titleOf(next).slice(0,40);
   }else b.textContent="Todos os roteiros gravados!";
-  dnT=setTimeout(function(){b.textContent="✓ Gravado, próximo roteiro"},2500);
+  dnT=setTimeout(function(){b.textContent="Gravado, próximo roteiro"},2500);
 });
 
 /* ---------- Importar vários roteiros ---------- */
