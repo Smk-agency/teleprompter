@@ -10,6 +10,15 @@ Link único: https://smk-agency.github.io/teleprompter/
 2. No celular (ou computador), abra o mesmo link e escolha **Celular**.
 3. Quando aparecer "Tablet conectado" no controle, é só gravar.
 
+## Instalar como app (sem a barra do navegador)
+
+Na tela de escolha (ou no topo do controle) toque em **Instalar como app**.
+
+- **Android / Chrome / Edge:** abre a janela de instalação do próprio navegador.
+- **iPhone / iPad:** no Safari, Compartilhar › Adicionar à Tela de Início (o botão mostra o passo a passo).
+
+Depois é só abrir pelo ícone **Teleprompter** na tela inicial. Arquivos envolvidos: `manifest.json`, `sw.js` e a pasta `icons/`.
+
 ## Marcar o que já foi gravado
 
 - Na lista, o quadrado à esquerda de cada roteiro marca ou desmarca **gravado**. Em cima aparece "3 de 8 gravados".

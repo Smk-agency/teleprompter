@@ -10,7 +10,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
-<link rel="apple-touch-icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Teleprompter">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
@@ -205,6 +206,14 @@ textarea.imp:focus{outline:none;border-color:var(--brand)}
 .irow small{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .irow.off{opacity:.45}
 
+/* ---------- Instalar como app ---------- */
+.inst{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.inst .note{max-width:40ch}
+.steps{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:10px;font-size:1rem}
+.steps b{color:var(--ink)}
+.ico{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:7px;background:var(--surface3);vertical-align:middle;margin:0 2px}
+.ico svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
 /* ---------- Tablet ---------- */
 #tab{position:fixed;inset:0;z-index:50;background:#000;color:#fff;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:none;font-family:var(--font-read)}
 #stage{position:absolute;inset:0;overflow:hidden}
@@ -256,8 +265,33 @@ textarea.imp:focus{outline:none;border-color:var(--brand)}
       <button class="pick" type="button" data-role="tablet"><strong>Tablet</strong><span>Fica parado na frente da câmera e mostra o roteiro rolando.</span></button>
       <button class="pick" type="button" data-role="controle"><strong>Celular</strong><span>Escreve o roteiro e comanda o tablet. Também funciona no computador.</span></button>
     </div>
+    <div class="inst" id="instBox" hidden>
+      <button class="btn primary" id="instBtn" type="button">Instalar como app</button>
+      <span class="note">Fica com ícone na tela inicial e abre em tela cheia, sem a barra do navegador.</span>
+    </div>
   </div>
 </section>
+
+<!-- ============ Instruções para instalar ============ -->
+<dialog class="modal" id="instD" aria-labelledby="instH">
+  <div class="mwrap">
+    <div class="mhead"><h2 id="instH">Instalar como app</h2><button class="btn ghost sm" id="instX" type="button">Fechar</button></div>
+    <div class="mbody">
+      <ol class="steps" id="instIOS" hidden>
+        <li>Abra este link no <b>Safari</b> (no iPhone e no iPad).</li>
+        <li>Toque em <b>Compartilhar</b> <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg></span>, na barra de baixo ou de cima.</li>
+        <li>Role a lista e toque em <b>Adicionar à Tela de Início</b>. Depois toque em <b>Adicionar</b>.</li>
+        <li>Abra pelo ícone <b>Teleprompter</b> na tela inicial. Ele abre sem a barra do navegador.</li>
+      </ol>
+      <ol class="steps" id="instOther" hidden>
+        <li>Toque no menu do navegador <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="19" r="1.2"/></svg></span> (os três pontinhos).</li>
+        <li>Toque em <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>.</li>
+        <li>Abra pelo ícone <b>Teleprompter</b> na tela inicial. Ele abre sem a barra do navegador.</li>
+      </ol>
+      <p class="note">Faça isso nos dois aparelhos: no tablet e no celular. Os roteiros continuam os mesmos.</p>
+    </div>
+  </div>
+</dialog>
 
 <!-- ============ Controle ============ -->
 <section id="ctl" hidden>
@@ -265,6 +299,7 @@ textarea.imp:focus{outline:none;border-color:var(--brand)}
     <div class="brand"><span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5l8 7-8 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Teleprompter <small>SMK</small></div>
     <div class="top-r">
       <span class="pill" id="cPill" data-s="wait"><i></i><span id="cPillT">Conectando</span></span>
+      <button class="btn ghost sm" id="instBtn2" type="button" hidden>Instalar app</button>
       <button class="btn ghost sm" id="cSwitch" type="button">Trocar modo</button>
     </div>
   </header>
@@ -1337,6 +1372,39 @@ C.stop=function(){
 };
 onEvt("store",function(){if(role==="controle")C.renderStore()});
 onEvt("live",function(){if(role==="controle"){C.renderRemote();C.renderList()}});
+
+/* ======================================================================
+   INSTALAR COMO APP
+   ====================================================================== */
+var A={prompt:null};
+A.standalone=function(){
+  try{return navigator.standalone===true||matchMedia("(display-mode: standalone)").matches||matchMedia("(display-mode: fullscreen)").matches}catch(e){return false}
+};
+A.ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+A.mobile=A.ios||/android|mobile/i.test(navigator.userAgent);
+A.render=function(){
+  var show=!A.standalone()&&(!!A.prompt||A.mobile);
+  $("#instBox").hidden=!show;$("#instBtn2").hidden=!show;
+};
+A.click=function(){
+  if(A.prompt){
+    var p=A.prompt;A.prompt=null;
+    p.prompt();
+    (p.userChoice||Promise.resolve()).then(A.render,A.render);
+    return;
+  }
+  $("#instIOS").hidden=!A.ios;$("#instOther").hidden=A.ios;
+  var d=$("#instD");if(d.showModal)d.showModal();else d.setAttribute("open","");
+};
+window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();A.prompt=e;A.render()});
+window.addEventListener("appinstalled",function(){A.prompt=null;A.render()});
+$("#instBtn").addEventListener("click",A.click);
+$("#instBtn2").addEventListener("click",A.click);
+$("#instX").addEventListener("click",function(){var d=$("#instD");if(d.close)d.close();else d.removeAttribute("open")});
+A.render();
+if("serviceWorker" in navigator&&location.protocol==="https:"){
+  window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(e){console.warn("SW:",e)})});
+}
 
 /* ======================================================================
    MODO (tablet ou controle)
