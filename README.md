@@ -12,13 +12,18 @@ Link único: https://smk-agency.github.io/teleprompter/
 
 ## Importar vários roteiros
 
-Em **Roteiros › Importar**, cole o texto inteiro ou escolha um arquivo `.txt`/`.md`. O app separa por:
+Em **Roteiros › Importar › Escolher arquivos**, selecione vários arquivos de uma vez (Word `.docx`, PDF ou `.txt`).
+Cada arquivo vira um roteiro, em ordem de nome (Short 01, Short 02…). O nome do arquivo vira o nome do roteiro;
+se a primeira linha do arquivo repete esse nome, ela vira o título e sai do texto lido.
+Os leitores de Word e PDF só são baixados quando você escolhe um arquivo desses. PDF escaneado (imagem) não tem texto para ler.
+
+Também dá pra colar um texto com vários roteiros juntos. Nesse caso o app separa por:
 
 - uma linha só com `---` (ou `***`, `===`) entre os roteiros;
 - títulos no começo de cada um: `Roteiro 1`, `Vídeo 2: Nome`, `Reels 3`, `# Nome`;
 - ou duas linhas em branco seguidas.
 
-Antes de salvar aparece a lista: dá pra renomear e desmarcar. Arquivos do Word ou PDF: abra, copie tudo e cole.
+Antes de salvar aparece a lista: dá pra renomear e desmarcar.
 
 ## Firebase
 

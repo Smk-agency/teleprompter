@@ -328,7 +328,8 @@ textarea.imp:focus{outline:none;border-color:var(--brand)}
     <div class="mwrap">
       <div class="mhead"><h2 id="impH">Importar roteiros</h2><button class="btn ghost sm" id="impX" type="button">Fechar</button></div>
       <div class="mbody" id="impIn">
-        <p class="note">Cole o texto com todos os roteiros ou escolha um arquivo .txt. O app separa um por um e mostra antes de salvar.</p>
+        <p class="note"><b>Escolher arquivos:</b> selecione vários arquivos do Word (.docx), PDF ou .txt de uma vez. Cada arquivo vira um roteiro, com o nome do arquivo.</p>
+        <p class="note"><b>Ou cole</b> abaixo um texto com vários roteiros juntos. O app separa um por um e mostra antes de salvar.</p>
         <textarea class="imp" id="impText" placeholder="Cole aqui o arquivo inteiro" aria-label="Texto com vários roteiros"></textarea>
         <ul class="how">
           <li>Uma linha só com <code>---</code> entre um roteiro e outro, ou</li>
@@ -342,8 +343,8 @@ textarea.imp:focus{outline:none;border-color:var(--brand)}
       </div>
       <div class="mfoot">
         <div class="ph-b" id="impFootIn">
-          <label class="btn" for="impFile" style="display:inline-flex;align-items:center">Escolher arquivo</label>
-          <input type="file" id="impFile" accept=".txt,.md,.text,text/plain,text/markdown" hidden>
+          <label class="btn" for="impFile" id="impFileL" style="display:inline-flex;align-items:center">Escolher arquivos</label>
+          <input type="file" id="impFile" multiple accept=".docx,.pdf,.txt,.md,.text,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown" hidden>
           <button class="btn primary" id="impGo" type="button">Separar roteiros</button>
         </div>
         <div class="ph-b" id="impFootOut" hidden>
@@ -471,6 +472,104 @@ function splitScripts(raw){
     out=t.split(/\n[ \t]*\n(?:[ \t]*\n)+/).map(function(b){return {title:"",text:impTidy(b)}}).filter(function(x){return x.text});
   }
   return out;
+}
+
+/* ---------- Leitura de arquivos (Word e PDF carregam o leitor só quando precisa) ---------- */
+var LIB={
+  mammoth:"https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js",
+  pdf:"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js",
+  pdfWorker:"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"
+};
+var libP={};
+function loadLib(src){
+  return libP[src]||(libP[src]=new Promise(function(res,rej){
+    var s=document.createElement("script");s.src=src;s.async=true;
+    s.onload=res;s.onerror=function(){delete libP[src];rej({msg:"sem internet para abrir este tipo de arquivo"})};
+    document.head.appendChild(s);
+  }));
+}
+function readBuf(f){
+  return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=function(){rej({msg:"não abriu"})};r.readAsArrayBuffer(f)});
+}
+function readStr(f){
+  return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(String(r.result||""))};r.onerror=function(){rej({msg:"não abriu"})};r.readAsText(f,"UTF-8")});
+}
+function fileText(f){
+  var n=f.name.toLowerCase();
+  if(/\.docx$/.test(n))return readBuf(f).then(docxText);
+  if(/\.pdf$/.test(n)||f.type==="application/pdf")return readBuf(f).then(pdfText);
+  if(/\.(doc|pages|odt|rtf)$/.test(n))return Promise.reject({msg:"salve como .docx ou PDF"});
+  return readStr(f);
+}
+/* Word: cada parágrafo vira um trecho; Título 1 vira título; 2+ parágrafos vazios seguidos separam roteiros. */
+function docxText(buf){
+  return loadLib(LIB.mammoth).then(function(){
+    return window.mammoth.convertToHtml({arrayBuffer:buf},{ignoreEmptyParagraphs:false});
+  }).then(function(r){
+    var doc=new DOMParser().parseFromString(r.value,"text/html");
+    var els=$$("h1,h2,h3,h4,h5,h6,p,li",doc.body).filter(function(el){return !el.querySelector("p,li,h1,h2,h3,h4,h5,h6")});
+    var out="",empties=0;
+    els.forEach(function(el){
+      var t=el.textContent.replace(/\s+/g," ").trim();
+      if(!t){empties++;return}
+      if(out)out+=empties>=2?"\n\n\n":"\n\n";
+      empties=0;
+      out+=(el.tagName==="H1"&&!IMP_HEAD.test(t))?"# "+t:t;
+    });
+    return out;
+  },function(e){throw (e&&e.msg)?e:{msg:"arquivo do Word com problema"}});
+}
+/* PDF: junta as linhas quebradas pela página em parágrafos, usando o espaço entre as linhas. */
+function pdfText(buf){
+  return loadLib(LIB.pdf).then(function(){
+    var lib=window.pdfjsLib;lib.GlobalWorkerOptions.workerSrc=LIB.pdfWorker;
+    return lib.getDocument({data:new Uint8Array(buf)}).promise;
+  }).then(function(pdf){
+    var pages=[];for(var i=1;i<=pdf.numPages;i++)pages.push(i);
+    return Promise.all(pages.map(function(p){
+      return pdf.getPage(p).then(function(pg){return pg.getTextContent()}).then(function(tc){
+        var lines=[],cur={t:"",y:null,h:0};
+        tc.items.forEach(function(it){
+          if(it.str){
+            cur.t+=it.str;
+            if(cur.y===null)cur.y=it.transform[5];
+            cur.h=Math.max(cur.h,Math.abs(it.height||it.transform[3]||0));
+          }
+          if(it.hasEOL){if(cur.t.trim())lines.push(cur);cur={t:"",y:null,h:0}}
+        });
+        if(cur.t.trim())lines.push(cur);
+        return lines.map(function(l){l.p=p;l.t=l.t.replace(/\s+/g," ").trim();return l});
+      });
+    }));
+  }).then(function(pages){
+    var lines=[].concat.apply([],pages);
+    var stand=function(t){return IMP_SEP.test(t)||(t.length<=90&&(IMP_HEAD.test(t)||IMP_LABEL.test(t)))};
+    var out="",prev=null;
+    lines.forEach(function(l){
+      if(!prev){out=l.t;prev=l;return}
+      var h=Math.max(prev.h,l.h,1),gap=prev.y-l.y,brk="";
+      if(prev.p!==l.p)brk="\n\n";
+      else if(gap<0||gap>3.2*h)brk=gap>3.2*h?"\n\n\n":"\n\n";
+      else if(gap>1.7*h||Math.abs(l.h-prev.h)>.25*prev.h||stand(l.t)||stand(prev.t))brk="\n\n";
+      out+=brk?brk+l.t:(/-$/.test(out)&&!/\s-$/.test(out)?l.t:" "+l.t);
+      prev=l;
+    });
+    if(!out.trim())throw {msg:"PDF sem texto (é imagem escaneada)"};
+    return out;
+  },function(e){throw (e&&e.msg)?e:{msg:"PDF com problema ou protegido"}});
+}
+/* Um arquivo = um roteiro. O nome do arquivo vira o nome; se a 1ª linha repete o nome, ela sai do texto e vira o título. */
+function fileItem(r){
+  var title=r.name.replace(/\.[^.]+$/,"").replace(/_/g," ").trim();
+  var text=impTidy(String(r.text).replace(/\r\n?/g,"\n"));
+  var m=text.match(/^([^\n]*)\n?/),first=m?m[1].replace(/^#+\s*/,"").trim():"";
+  var norm=function(s){return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g," ").trim()};
+  var a=norm(first),b=norm(title).replace(/\s*\.\.\.$/,"");
+  if(a&&b&&first.length<=160&&(a.indexOf(b)===0||b.indexOf(a)===0)){
+    if(first.length>title.length)title=first;
+    text=text.slice(m[0].length).trim();
+  }
+  return {title:title.slice(0,80),text:text};
 }
 function titleOf(s){
   if(s.title&&s.title.trim())return s.title.trim();
@@ -1058,12 +1157,16 @@ I.count=function(){
   b.textContent=n===1?"Importar 1 roteiro":"Importar "+n+" roteiros";
 };
 I.preview=function(){
-  I.items=splitScripts(impText.value).map(function(x){x.on=true;return x});
-  if(!I.items.length){impText.focus();impText.placeholder="Cole o texto aqui antes de separar";return}
-  var n=I.items.length;
-  $("#impSum").textContent=n===1
+  var items=splitScripts(impText.value);
+  if(!items.length){impText.focus();impText.placeholder="Cole o texto aqui antes de separar";return}
+  var n=items.length;
+  I.show(items,n===1
     ?"Encontrei 1 roteiro só. Se eram vários, volte e coloque uma linha com --- entre eles."
-    :"Encontrei "+n+" roteiros. Confira os nomes, desmarque o que não quiser e importe.";
+    :"Encontrei "+n+" roteiros. Confira os nomes, desmarque o que não quiser e importe.");
+};
+I.show=function(items,summary){
+  I.items=items.map(function(x){x.on=true;return x});
+  $("#impSum").textContent=summary;
   impList.textContent="";
   I.items.forEach(function(it,i){
     var row=document.createElement("div");row.className="irow";
@@ -1094,15 +1197,39 @@ $("#impX").addEventListener("click",I.close);
 $("#impGo").addEventListener("click",I.preview);
 $("#impBack").addEventListener("click",function(){I.step(false)});
 $("#impSave").addEventListener("click",I.save);
+I.busy=function(on,msg){
+  var g=$("#impGo"),l=$("#impFileL");
+  g.disabled=on;g.textContent=on?(msg||"Lendo arquivos…"):"Separar roteiros";
+  l.style.pointerEvents=on?"none":"";l.style.opacity=on?".4":"";
+};
 $("#impFile").addEventListener("change",function(e){
-  var f=e.target.files&&e.target.files[0];e.target.value="";
-  if(!f)return;
-  if(/\.(docx?|pdf|pages|odt)$/i.test(f.name)){
-    impText.value="";impText.placeholder="Esse tipo de arquivo não dá pra ler direto. Abra o arquivo, copie tudo (Ctrl+A, Ctrl+C) e cole aqui.";impText.focus();return;
-  }
-  var r=new FileReader();
-  r.onload=function(){impText.value=String(r.result||"");I.preview()};
-  r.readAsText(f,"UTF-8");
+  var files=Array.prototype.slice.call(e.target.files||[]);e.target.value="";
+  if(!files.length)return;
+  files.sort(function(a,b){return a.name.localeCompare(b.name,"pt-BR",{numeric:true,sensitivity:"base"})});
+  var done=0,bad=[];
+  I.busy(true,files.length>1?"Lendo 0 de "+files.length+"…":"Lendo arquivo…");
+  Promise.all(files.map(function(f){
+    return fileText(f).then(function(t){
+      done++;if(files.length>1)I.busy(true,"Lendo "+done+" de "+files.length+"…");
+      return {name:f.name,text:t};
+    },function(err){done++;bad.push(f.name+(err&&err.msg?" ("+err.msg+")":""));return null});
+  })).then(function(res){
+    I.busy(false);
+    res=res.filter(function(x){return x&&x.text.trim()});
+    var items=[];
+    if(files.length===1&&res.length===1){
+      /* um arquivo só: pode ter vários roteiros dentro */
+      items=splitScripts(res[0].text);
+      if(items.length===1)items=[fileItem(res[0])];
+    }else items=res.map(fileItem);
+    var err=bad.length?" Não consegui ler: "+bad.join(", ")+".":"";
+    if(!items.length){impText.value="";impText.placeholder="Não encontrei texto nesses arquivos."+err;return}
+    var n=items.length;
+    I.show(items,(files.length>1
+      ?(n===1?"1 arquivo virou 1 roteiro.":n+" arquivos viraram "+n+" roteiros, um por arquivo.")
+      :(n===1?"O arquivo virou 1 roteiro.":"Encontrei "+n+" roteiros dentro do arquivo."))
+      +" Confira os nomes, desmarque o que não quiser e importe."+err);
+  });
 });
 $$("#cTabs button").forEach(function(b){b.addEventListener("click",function(){C.setTab(b.dataset.tab)})});
 $("#cSwitch").addEventListener("click",function(){leave()});
